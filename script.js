@@ -62,11 +62,14 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (account) {
+const displayMovements = function (movements, isSorted = false) {
   containerMovements.innerHTML = '';
-  // .textContent = 0;
 
-  account.movements.forEach(function (curMov, i) {
+  const movementsSorted = isSorted
+    ? movements.slice().sort((a, b) => a - b)
+    : movements;
+
+  movementsSorted.forEach(function (curMov, i) {
     const operationType = curMov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `
@@ -80,15 +83,24 @@ const displayMovements = function (account) {
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
+  console.log(movementsSorted);
 };
 
+// IMPLEMENTING SORT
+let sortedState = false;
+btnSort.addEventListener('click', function (e) {
+  sortedState = !sortedState;
+  e.preventDefault();
+  displayMovements(currentAccount.movements, sortedState);
+});
+
+//
 const calcDisplayBalance = function (account) {
   // making total of money dynamically
   account.balance = account.movements.reduce(
     (acc, currentMovement) => acc + currentMovement,
     0
   );
-  // account.balance = balance;
 
   labelBalance.textContent = `${account.balance} BRL`;
 };
@@ -137,18 +149,15 @@ console.log(accounts);
 // UPTADEUI - call: displayMovements ,calcDisplayBalance, calcDisplaySummary
 const updateUI = function (account) {
   // Display movements
-  displayMovements(currentAccount);
+  displayMovements(account.movements);
   // Display balance
-  calcDisplayBalance(currentAccount);
+  calcDisplayBalance(account);
   // Display summary
-  calcDisplaySummary(currentAccount);
+  calcDisplaySummary(account);
 };
 
-// currentAccount , Will change as we log in js 1111 will show only its info.
 let currentAccount;
-//LOGIN function, data is being collected dynamically
 btnLogin.addEventListener('click', function (e) {
-  //prevent form from submitting
   e.preventDefault();
 
   currentAccount = accounts.find(
@@ -235,6 +244,7 @@ btnClose.addEventListener('click', function (e) {
     inputCloseUsername.value = inputClosePin.value = '';
   }
 });
+
 //////////
 // ///////////////////////////////////////
 /////////////////////////////////////////////////
@@ -632,7 +642,7 @@ const overAllBalance2 = accounts
   .flatMap(acc => acc.movements)
   .reduce((acc, mov) => acc + mov, 0);
 console.log(overAllBalance);
-*/
+
 const breeds = [
   {
     breed: 'German Shepherd',
@@ -670,3 +680,91 @@ const breeds = [
     activities: ['agility', 'fetch'],
   },
 ];
+console.log(`----CHALLENGE----`);
+// #01
+// find the element you want based on the index of it
+
+const huskyWeight = breeds.find(currBreed => {
+  return currBreed.breed === 'Husky';
+}).averageWeight;
+console.log(huskyWeight);
+
+// #02
+const dogBothActivities = breeds.find(
+  breed =>
+    breed.activities.includes('running') && breed.activities.includes('fetch')
+);
+console.log(dogBothActivities);
+
+// #03
+const allActivities = breeds.flatMap(breed => breed.activities);
+console.log(allActivities);
+
+//#04
+const uniqueActivities = new Set(allActivities);
+console.log(uniqueActivities);
+
+//#05
+const swimmingAdjacent = [
+  ...new Set(
+    breeds
+      .filter(breed => breed.activities.includes('swimming'))
+      .flatMap(act => act.activities)
+      .filter(act => act != 'swimming')
+  ),
+];
+console.log(swimmingAdjacent);
+
+//#06
+const averageWeightAllBreeds = breeds.every(breed => {
+  return breed.averageWeight >= 10;
+});
+
+console.log(averageWeightAllBreeds);
+
+//#07
+const active = breeds
+  .map(breed => breed.activities)
+  .some((activities, i, arr) => {
+    console.log(arr);
+    return activities.length >= 3;
+  });
+console.log(active);
+
+// BONUS
+const avgHeaviest = breeds
+  .filter(dog => dog.activities.includes('fetch'))
+  .map(dog => {
+    return dog.averageWeight;
+  });
+console.log(Math.max(...avgHeaviest));
+*/
+// SORT METHOD
+
+//STRINGS
+const owners = ['Bob', 'Alisson', 'Cristiano', 'Diego'];
+console.log(owners.sort());
+console.log(owners);
+
+// NUMBERS
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// console.log(movements.sort());don't work
+
+// return < 0,  A , B  (keep order)
+// return > 0,  B , A (switch order)
+
+// Asceding
+// movements.sort((a, b) => {
+//   if (a > b) return 1;
+//   if (a < b) return -1;
+// });
+movements.sort((a, b) => a - b);
+console.log(movements);
+
+// Desceding
+// movements.sort((a, b) => {
+//   if (a > b) return -1;
+//   if (a < b) return 1;
+// });
+movements.sort((a, b) => b - a);
+console.log(movements);
